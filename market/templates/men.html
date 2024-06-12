@@ -23,7 +23,9 @@ Men's Page
                     <p class="card-text"><strong>{{ item.price }} Lei</strong></p>
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="btn-group">
-                            <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#Modal-MoreInfo-{{ item.id }}">More Info</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#Modal-Favorite-{{ item.id }}">
+                                <img src="{{ url_for('static', filename='img/favorite.png') }}" alt="Favorite" style="width: 24px; height: 24px;">
+                            </button>
                             <button type="button" class="btn btn-sm btn-outline-primary" data-toggle="modal" data-target="#Modal-PurchaseConfirm-{{ item.id }}">Add to Cart</button>
                         </div>
                     </div>
