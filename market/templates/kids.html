@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}
+Kids Page
+{% endblock %}
+{% block content %}
+    <style>
+        .product-img {
+            width: 100%;
+            height: 500px; /* Adjust height as needed */
+            object-fit: cover;
+        }
+    </style>
+
+<div class="container mt-4">
+    <div class="row">
+        {% for item in items %}
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                <img src="{{ url_for('static', filename='img/' + item.image_filename) }}" class="card-img-top img-fluid product-img" alt="{{ item.name }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.name }}</h5>
+                    <p class="card-text">{{ item.description }}</p>
+                    <p class="card-text"><strong>{{ item.price }} Lei</strong></p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#Modal-Favorite-{{ item.id }}">
+                                <img src="{{ url_for('static', filename='img/favorite.png') }}" alt="Favorite" style="width: 24px; height: 24px;">
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-primary" data-toggle="modal" data-target="#Modal-PurchaseConfirm-{{ item.id }}">Add to Cart</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

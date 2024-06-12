@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}
+Register Page
+{% endblock %}
+
+{% block content %}
+<body class="text-center">
+    <div class="container">
+        <form method="POST" class="form-register">
+            {{ form.hidden_tag() }}
+            <img class="mb-4" src="{{ url_for('static', filename='images/rochie.jpg') }}" alt="Rochie">
+            <h1 class="h3 mb-3 font-weight-normal text-black">
+                Please Create your Account
+            </h1>
+            <br>
+            {{ form.username.label(class="text-black") }}
+            {{ form.username(class="form-control", placeholder="User Name") }}
+
+            {{ form.email_address.label(class="text-black") }}
+            {{ form.email_address(class="form-control", placeholder="Email Address") }}
+
+            {{ form.password1.label(class="text-black") }}
+            {{ form.password1(class="form-control", placeholder="Password") }}
+
+            {{ form.password2.label(class="text-black") }}
+            {{ form.password2(class="form-control", placeholder="Confirm Password") }}
+
+            <br>
+
+            <div class="checkbox mb-3">
+                <h6 class="text-black">Already have an account?</h6>
+                <a class="btn btn-sm btn-secondary btn-creme" href="{{ url_for('login_page') }}">Login</a>
+            </div>
+
+            {{ form.submit(class="btn btn-lg btn-primary btn-creme btn-block") }}
+        </form>
+    </div>
+</body>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}
+   Home Page
+{% endblock %}
+{% block content %}
+    <style>
+        .bg-light-creme {
+            background-color: #f5f5dc !important;
+        }
+        .bg-white {
+            background-color: #ffffff !important;
+        }
+        .text-black {
+            color: black !important;
+        }
+        .btn-creme {
+            background-color: #d2b48c !important;
+            border-color: #d2b48c !important;
+            color: white !important;
+        }
+        .logo {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            height: 50px;
+        }
+    </style>
+    <div class="bg-light-creme text-black position-relative">
+        <!-- Logo-ul în stânga sus -->
+        <div class="text-center p-3"></div>
+        <div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center bg-light-creme text-black">
+            <div class="col-md-5 p-lg-5 mx-auto my-5 bg-white">
+                <h1 class="display-4 font-weight-normal text-black">Discover & Shop The Trend</h1>
+                <p class="lead font-weight-normal text-black">Extra 75% off in Winter Sale</p>
+                <a class="btn btn-primary btn-creme" href="{{ url_for('market_page') }}">Shop Now</a>
+            </div>
+            <div class="product-device box-shadow d-none d-md-block bg-light-creme"></div>
+            <div class="product-device product-device-2 box-shadow d-none d-md-block bg-light-creme"></div>
+        </div>
+    </div>
+{% endblock %}
