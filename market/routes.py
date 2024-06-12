@@ -69,7 +69,7 @@ def login_page():
         ):
             login_user(attempted_user)
             flash(f'Success! You are logged in as: {attempted_user.username}', category='success')
-            return redirect(url_for('market_page'))
+            return redirect(url_for('women_page'))
         else:
             flash('Username and password do not match! Please try again', category='danger')
 
@@ -83,21 +83,21 @@ def logout_page():
     return redirect(url_for("home_page"))
 
 
-@app.route('/market/women')
+@app.route('/women')
 @login_required
 def women_page():
     items = Item.query.filter_by(category='women').all()
     return render_template('women.html', items=items)
 
 
-@app.route('/market/men')
+@app.route('/men')
 @login_required
 def men_page():
     items = Item.query.filter_by(category='men').all()
     return render_template('men.html', items=items)
 
 
-@app.route('/market/kids')
+@app.route('/kids')
 @login_required
 def kids_page():
     items = Item.query.filter_by(category='kids').all()
@@ -124,7 +124,7 @@ def add_to_favorites(product_id):
     return redirect(url_for('kids_page'))  # Redirectează utilizatorul înapoi la pagina anterioară
 
 
-@app.route('/market/favorite')
+@app.route('/favorite')
 @login_required
 def favorite_page():
     favorites = Favorite.query.filter_by(user_id=current_user.id).all()
@@ -132,7 +132,7 @@ def favorite_page():
     return render_template('favorite.html', items=favorite_items)
 
 
-@app.route('/market/shopping_cart')
+@app.route('/shopping_cart')
 @login_required
 def shopping_cart_page():
     return render_template('shopping_cart.html')
