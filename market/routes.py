@@ -136,3 +136,32 @@ def favorite_page():
 @login_required
 def shopping_cart_page():
     return render_template('shopping_cart.html')
+
+
+@app.route('/order_details')
+@login_required
+def order_details():
+    return render_template('order_details.html')
+
+@app.route('/submit_order', methods=['POST'])
+@login_required
+def submit_order():
+    # Process the form data if needed
+    first_name = request.form['shippingFirstName']
+    last_name = request.form['shippingLastName']
+    phone = request.form['shippingPhone']
+    address = request.form['shippingAddress']
+    city = request.form['shippingCity']
+    zip_code = request.form['shippingZip']
+    card_number = request.form['cardNumber']
+    card_expiry = request.form['cardExpiry']
+    card_cvv = request.form['cardCVV']
+
+    # Flash success message
+    flash('Your order has been successfully placed!', 'success')
+    return redirect(url_for('home_page'))
+
+# Other existing routes...
+
+if __name__ == '__main__':
+    app.run(debug=True)
