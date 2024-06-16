@@ -1,6 +1,6 @@
 from market import app, db
 from flask import render_template, redirect, url_for, flash, request
-from market.models import Item, User, Favorite
+from market.models import Item, User, Favorite, ShoppingCartItem
 from market.forms import RegisterForm, LoginForm, PurchaseItemForm, SellItemForm
 from flask_login import login_user, logout_user, login_required, current_user
 
@@ -101,41 +101,88 @@ def men_page():
 @login_required
 def kids_page():
     items = Item.query.filter_by(category='kids').all()
-    return render_template('kids.html', items=items)
+    favorite_item_ids = [fav.product_id for fav in current_user.favorites]
+    return render_template('kids.html', items=items, favorite_item_ids=favorite_item_ids)
 
-
-# @app.route('/market/favorite')
-# @login_required
-# def favorite_page():
-#     return render_template('favorite.html')
 
 @app.route('/add_to_favorites/<int:product_id>', methods=['POST'])
 @login_required
 def add_to_favorites(product_id):
-    # Verifică dacă produsul este deja în favorite
+    # Check if the product is already in favorites
     existing_favorite = Favorite.query.filter_by(user_id=current_user.id, product_id=product_id).first()
+    item = Item.query.get(product_id)
     if not existing_favorite:
-        favorite = Favorite(user_id=current_user.id, product_id=product_id)
+        favorite = Favorite(
+            user_id=current_user.id,
+            product_id=product_id,
+            product_name=item.name,
+            product_description=item.description,
+            product_photo=item.image_filename
+        )
         db.session.add(favorite)
         db.session.commit()
         flash(f'Item added to favorites!', category='success')
     else:
         flash(f'Item is already in favorites!', category='info')
-    return redirect(url_for('kids_page'))  # Redirectează utilizatorul înapoi la pagina anterioară
+    return redirect(url_for('kids_page'))  # Redirect the user back to the previous page
 
+
+@app.route('/toggle_favorite', methods=['POST'])
+@login_required
+def toggle_favorite():
+    item_id = request.form.get('item_id')
+    item = Item.query.get(item_id)
+    favorite = Favorite.query.filter_by(user_id=current_user.id, product_id=item_id).first()
+
+    if favorite:
+        db.session.delete(favorite)
+        db.session.commit()
+        flash('Item removed from favorites!', 'info')
+    else:
+        new_favorite = Favorite(
+            user_id=current_user.id,
+            product_id=item_id,
+            product_name=item.name,
+            product_description=item.description,
+            product_photo=item.image_filename
+        )
+        db.session.add(new_favorite)
+        db.session.commit()
+        flash('Item added to favorites!', 'success')
+
+    return redirect(request.referrer or url_for('home_page'))
 
 @app.route('/favorite')
 @login_required
 def favorite_page():
     favorites = Favorite.query.filter_by(user_id=current_user.id).all()
     favorite_items = [Item.query.get(favorite.product_id) for favorite in favorites]
+    favorite_items = [item for item in favorite_items if item is not None]
     return render_template('favorite.html', items=favorite_items)
 
 
 @app.route('/shopping_cart')
 @login_required
 def shopping_cart_page():
-    return render_template('shopping_cart.html')
+    cart_items = ShoppingCartItem.query.filter_by(user_id=current_user.id).all()
+    return render_template('shopping_cart.html', cart_items=cart_items)
+
+
+@app.route('/add_to_cart', methods=['POST'])
+@login_required
+def add_to_cart():
+    item_id = request.form.get('item_id')
+    size = request.form.get('size')
+
+    item = Item.query.get(item_id)
+    if item:
+        cart_item = ShoppingCartItem(user_id=current_user.id, item_id=item.id, size=size)
+        db.session.add(cart_item)
+        db.session.commit()
+        flash('Product added to cart successfully!', 'success')
+        return redirect(url_for('kids_page'))
+    flash('Failed to add item to cart.', 'danger')
+    return redirect(url_for('kids_page'))
 
 
 @app.route('/order_details')
@@ -157,11 +204,16 @@ def submit_order():
     card_expiry = request.form['cardExpiry']
     card_cvv = request.form['cardCVV']
 
+    # Here you would process the order and save the information in the database
+
+    # Clear the cart items for the current user
+    ShoppingCartItem.query.filter_by(user_id=current_user.id).delete()
+    db.session.commit()
+
     # Flash success message
     flash('Your order has been successfully placed!', 'success')
     return redirect(url_for('home_page'))
 
-# Other existing routes...
 
 if __name__ == '__main__':
     app.run(debug=True)

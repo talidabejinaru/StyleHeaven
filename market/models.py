@@ -13,6 +13,7 @@ class User(db.Model, UserMixin):
     password_hash = db.Column(db.String(length=60), nullable=False)
     budget = db.Column(db.Integer(), nullable=False, default=1000)
     items = db.relationship('Item', backref='owned_user', lazy=True)
+    favorites = db.relationship('Favorite', backref='user', lazy=True)  # Add this line
 
     @property
     def prettier_budget(self):
@@ -38,6 +39,7 @@ class User(db.Model, UserMixin):
     def can_sell(self, item_obj):
         return item_obj in self.items
 
+
 class Item(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(length=30), nullable=False, unique=True)
@@ -61,10 +63,30 @@ class Item(db.Model):
         user.budget += self.price
         db.session.commit()
 
+
 class Favorite(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('item.id'), nullable=False)
+    product_name = db.Column(db.String, nullable=False)
+    product_description = db.Column(db.String, nullable=False)
+    product_photo = db.Column(db.String, nullable=False)
 
     def __repr__(self):
-        return f"Favorite('{self.user_id}', '{self.product_id}')"
+        return f"<Favorite {self.product_name}>"
+
+
+
+
+class ShoppingCartItem(db.Model):
+    __tablename__ = 'shopping_cart_item'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    item_id = db.Column(db.Integer, db.ForeignKey('item.id'), nullable=False)
+    size = db.Column(db.String(10), nullable=False)
+
+    user = db.relationship('User', backref='shopping_cart_items')
+    item = db.relationship('Item', backref='shopping_cart_items')
+
+    def __repr__(self):
+        return f'<ShoppingCartItem {self.item.name} - {self.size}>'
