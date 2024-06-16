@@ -13,7 +13,7 @@ class User(db.Model, UserMixin):
     password_hash = db.Column(db.String(length=60), nullable=False)
     budget = db.Column(db.Integer(), nullable=False, default=1000)
     items = db.relationship('Item', backref='owned_user', lazy=True)
-    favorites = db.relationship('Favorite', backref='user', lazy=True)  # Add this line
+    favorites = db.relationship('Favorite', backref='user', lazy=True)
 
     @property
     def prettier_budget(self):
@@ -49,6 +49,7 @@ class Item(db.Model):
     image_filename = db.Column(db.String(length=100), nullable=True)
     owner = db.Column(db.Integer(), db.ForeignKey('user.id'))
     category = db.Column(db.String(length=50), nullable=False, default='general')
+    subcategory = db.Column(db.String(length=50), nullable=True)
 
     def __repr__(self):
         return f'Item {self.name}'
