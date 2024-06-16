@@ -13,9 +13,21 @@ Men's Page
         background-color: blue;
         color: white;
     }
+    .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: #28a745;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        display: none;
+        z-index: 1000; /* Ensure the notification is on top of other elements */
+    }
 </style>
 
 <div class="container mt-4">
+    <div id="notification" class="notification">Product added successfully!</div>
     <div class="row">
         {% for item in items %}
         <div class="col-md-4">
@@ -27,9 +39,16 @@ Men's Page
                     <p class="card-text"><strong>{{ item.price }} Lei</strong></p>
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="btn-group">
-                            <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#Modal-Favorite-{{ item.id }}">
-                                <img src="{{ url_for('static', filename='img/favorite.png') }}" alt="Favorite" style="width: 24px; height: 24px;">
-                            </button>
+                            <form action="{{ url_for('toggle_favorite') }}" method="post">
+                                <input type="hidden" name="item_id" value="{{ item.id }}">
+                                <button type="submit" class="btn btn-sm btn-outline-secondary">
+                                    {% if item.id in favorite_item_ids %}
+                                    <img src="{{ url_for('static', filename='img/favorite_filled.png') }}" alt="Favorite" style="width: 24px; height: 24px;">
+                                    {% else %}
+                                    <img src="{{ url_for('static', filename='img/favorite.png') }}" alt="Favorite" style="width: 24px; height: 24px;">
+                                    {% endif %}
+                                </button>
+                            </form>
                             <button type="button" class="btn btn-sm btn-outline-primary" data-toggle="modal" data-target="#Modal-Cart-{{ item.id }}">Add to Cart</button>
                         </div>
                     </div>
@@ -37,12 +56,12 @@ Men's Page
             </div>
         </div>
 
-        <!-- Modal for Cart -->
+        <!-- Modal -->
         <div class="modal fade" id="Modal-Cart-{{ item.id }}" tabindex="-1" role="dialog" aria-labelledby="ModalLabel-{{ item.id }}" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="ModalLabel-{{ item.id }}">Cart Summary</h5>
+                        <h5 class="modal-title" id="ModalLabel-{{ item.id }}">Select Size</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -53,37 +72,24 @@ Men's Page
                         <p><strong>Transport:</strong> 0 RON</p>
                         <hr>
                         <p><strong>Total:</strong> {{ item.price }} Lei</p>
+                        <p><strong>Select Size:</strong></p>
+                        <div class="btn-group" role="group" aria-label="Size selection">
+                            <form action="{{ url_for('add_to_cart') }}" method="post">
+                                <input type="hidden" name="item_id" value="{{ item.id }}">
+                                <button type="submit" name="size" value="XS" class="btn btn-outline-primary">XS</button>
+                                <button type="submit" name="size" value="S" class="btn btn-outline-primary">S</button>
+                                <button type="submit" name="size" value="M" class="btn btn-outline-primary">M</button>
+                                <button type="submit" name="size" value="L" class="btn btn-outline-primary">L</button>
+                                <button type="submit" name="size" value="XL" class="btn btn-outline-primary">XL</button>
+                            </form>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <a href="{{ url_for('order_details') }}" class="btn btn-finalize">Finalize Order</a>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- Modal for Favorite -->
-        <div class="modal fade" id="Modal-Favorite-{{ item.id }}" tabindex="-1" role="dialog" aria-labelledby="ModalLabel-Favorite-{{ item.id }}" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="ModalLabel-Favorite-{{ item.id }}">Add to Favorites</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <p><strong>Item:</strong> {{ item.name }}</p>
-                        <p><strong>Price:</strong> {{ item.price }} Lei</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <a href="{{ url_for('add_to_favorites', product_id=item.id) }}" class="btn btn-primary">Add to Favorites</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         {% endfor %}
     </div>
 </div>
