@@ -49,10 +49,11 @@ class Item(db.Model):
     image_filename = db.Column(db.String(length=100), nullable=True)
     owner = db.Column(db.Integer(), db.ForeignKey('user.id'))
     category = db.Column(db.String(length=50), nullable=False, default='general')
-    subcategory = db.Column(db.String(length=50), nullable=True)
+    subcategory = db.Column(db.String(length=50), nullable=False, default='general')
 
     def __repr__(self):
         return f'Item {self.name}'
+
 
     def buy(self, user):
         self.owner = user.id
@@ -65,13 +66,14 @@ class Item(db.Model):
         db.session.commit()
 
 
+
 class Favorite(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    product_id = db.Column(db.Integer, db.ForeignKey('item.id'), nullable=False)
-    product_name = db.Column(db.String, nullable=False)
-    product_description = db.Column(db.String, nullable=False)
-    product_photo = db.Column(db.String, nullable=False)
+    product_id = db.Column(db.Integer, nullable=False)
+    product_name = db.Column(db.String(100), nullable=False)
+    product_description = db.Column(db.String(500), nullable=False)
+    product_photo = db.Column(db.String(100), nullable=False)
 
     def __repr__(self):
         return f"<Favorite {self.product_name}>"

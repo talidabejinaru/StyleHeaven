@@ -104,22 +104,35 @@ def kids_page():
 @login_required
 def subcategory_page(category, subcategory):
     items = Item.query.filter_by(category=category, subcategory=subcategory).all()
-    return render_template('subcategory.html', items=items, category=category, subcategory=subcategory)
+    favorite_item_ids = [fav.product_id for fav in current_user.favorites]
+    return render_template('subcategory.html', items=items, category=category, subcategory=subcategory, favorite_item_ids=favorite_item_ids)
+
 
 
 @app.route('/add_to_favorites/<int:product_id>', methods=['POST'])
 @login_required
 def add_to_favorites(product_id):
-    # Check if the product is already in favorites
+    # Verificăm dacă produsul este deja în favorite
     existing_favorite = Favorite.query.filter_by(user_id=current_user.id, product_id=product_id).first()
     if not existing_favorite:
-        favorite = Favorite(user_id=current_user.id, product_id=product_id)
-        db.session.add(favorite)
-        db.session.commit()
-        flash(f'Item added to favorites!', category='success')
+        item = Item.query.get(product_id)
+        if item:
+            favorite = Favorite(
+                user_id=current_user.id,
+                product_id=item.id,
+                product_name=item.name,
+                product_description=item.description,
+                product_photo=item.image_filename
+            )
+            db.session.add(favorite)
+            db.session.commit()
+            flash(f'Item added to favorites!', category='success')
+        else:
+            flash(f'Item does not exist!', category='danger')
     else:
         flash(f'Item is already in favorites!', category='info')
-    return redirect(url_for('kids_page'))  # Redirect the user back to the previous page
+    return redirect(url_for('kids_page'))  # Redirecționăm utilizatorul înapoi la pagina anterioară
+
 
 @app.route('/toggle_favorite', methods=['POST'])
 @login_required

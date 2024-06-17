@@ -21,10 +21,6 @@
             background: 0 0;
             border: 0;
         }
-        .dropdown-menu a:hover {
-            background-color: #f8f9fa;
-            color: #0056b3;
-        }
     </style>
     {% block head %}
     {% endblock %}
@@ -67,9 +63,8 @@
                         Copii
                     </a>
                     <div class="dropdown-menu" aria-labelledby="kidsDropdown">
-                        <a class="dropdown-item" href="{{ url_for('subcategory_page', category='kids', subcategory='Tricouri') }}">Tricouri</a>
-                        <a class="dropdown-item" href="{{ url_for('subcategory_page', category='kids', subcategory='Hanorace') }}">Hanorace</a>
-                        <a class="dropdown-item" href="{{ url_for('subcategory_page', category='kids', subcategory='Pantaloni') }}">Pantaloni</a>
+                        <a class="dropdown-item" href="{{ url_for('subcategory_page', category='kids', subcategory='Fete') }}">Fete</a>
+                        <a class="dropdown-item" href="{{ url_for('subcategory_page', category='kids', subcategory='Baieti') }}">Băieți</a>
                         <a class="dropdown-item" href="{{ url_for('subcategory_page', category='kids', subcategory='Accesorii') }}">Accesorii</a>
                     </div>
                 </li>
