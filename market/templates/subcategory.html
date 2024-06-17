@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}
-{{ category }} - {{ subcategory }}
+Subcategory Page
 {% endblock %}
 {% block content %}
 <style>
@@ -13,28 +13,20 @@
         background-color: blue;
         color: white;
     }
-    .notification {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background-color: #28a745;
-        color: white;
-        padding: 10px;
-        border-radius: 5px;
-        display: none;
-        z-index: 1000; /* Ensure the notification is on top of other elements */
+    .favorite-btn.favorited {
+        border: 2px solid red;
+        color: red;
     }
 </style>
 
 <div class="container mt-4">
     <div id="notification" class="notification">Product added successfully!</div>
+    <h2>{{ category }} - {{ subcategory }}</h2>
     <div class="row">
         {% for item in items %}
         <div class="col-md-4">
             <div class="card mb-4 shadow-sm">
-                {% if item.image_filename and item.image_filename != 'default.jpg' %}
-                    <img src="{{ url_for('static', filename='img/' + item.image_filename) }}" class="card-img-top img-fluid product-img" alt="{{ item.name }}">
-                {% endif %}
+                <img src="{{ url_for('static', filename='img/' + item.image_filename) }}" class="card-img-top img-fluid product-img" alt="{{ item.name }}">
                 <div class="card-body">
                     <h5 class="card-title">{{ item.name }}</h5>
                     <p class="card-text">{{ item.description }}</p>
@@ -43,12 +35,8 @@
                         <div class="btn-group">
                             <form action="{{ url_for('toggle_favorite') }}" method="post">
                                 <input type="hidden" name="item_id" value="{{ item.id }}">
-                                <button type="submit" class="btn btn-sm btn-outline-secondary">
-                                    {% if item.id in favorite_item_ids %}
-                                    <img src="{{ url_for('static', filename='img/favorite_filled.png') }}" alt="Favorite" style="width: 24px; height: 24px;">
-                                    {% else %}
-                                    <img src="{{ url_for('static', filename='img/favorite.png') }}" alt="Favorite" style="width: 24px; height: 24px;">
-                                    {% endif %}
+                                <button type="submit" class="btn btn-sm favorite-btn {% if item.id in favorite_item_ids %}favorited{% endif %}">
+                                    <i class="fa fa-heart"></i>
                                 </button>
                             </form>
                             <button type="button" class="btn btn-sm btn-outline-primary" data-toggle="modal" data-target="#Modal-Cart-{{ item.id }}">Add to Cart</button>
