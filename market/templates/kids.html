@@ -34,7 +34,9 @@ Kids Page
             {% for item in items %}
             <div class="col-md-4">
                 <div class="card mb-4 shadow-sm">
-                    <img src="{{ url_for('static', filename='img/' + item.image_filename) }}" class="card-img-top img-fluid product-img" alt="{{ item.name }}">
+                    {% if item.image_filename and item.image_filename != 'default.jpg' %}
+                        <img src="{{ url_for('static', filename='img/' + item.image_filename) }}" class="card-img-top img-fluid product-img" alt="{{ item.name }}">
+                    {% endif %}
                     <div class="card-body">
                         <h5 class="card-title">{{ item.name }}</h5>
                         <p class="card-text">{{ item.description }}</p>

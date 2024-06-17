@@ -112,7 +112,6 @@ def subcategory_page(category, subcategory):
 @app.route('/add_to_favorites/<int:product_id>', methods=['POST'])
 @login_required
 def add_to_favorites(product_id):
-    # Verificăm dacă produsul este deja în favorite
     existing_favorite = Favorite.query.filter_by(user_id=current_user.id, product_id=product_id).first()
     if not existing_favorite:
         item = Item.query.get(product_id)
@@ -121,8 +120,8 @@ def add_to_favorites(product_id):
                 user_id=current_user.id,
                 product_id=item.id,
                 product_name=item.name,
-                product_description=item.description,
-                product_photo=item.image_filename
+                product_description=item.description if item.description else 'No description available',
+                product_photo=item.image_filename if item.image_filename else 'default.jpg'
             )
             db.session.add(favorite)
             db.session.commit()
@@ -131,8 +130,7 @@ def add_to_favorites(product_id):
             flash(f'Item does not exist!', category='danger')
     else:
         flash(f'Item is already in favorites!', category='info')
-    return redirect(url_for('kids_page'))  # Redirecționăm utilizatorul înapoi la pagina anterioară
-
+    return redirect(url_for('kids_page'))
 
 @app.route('/toggle_favorite', methods=['POST'])
 @login_required
@@ -145,10 +143,20 @@ def toggle_favorite():
         db.session.commit()
         flash('Item removed from favorites!', 'info')
     else:
-        new_favorite = Favorite(user_id=current_user.id, product_id=item_id)
-        db.session.add(new_favorite)
-        db.session.commit()
-        flash('Item added to favorites!', 'success')
+        item = Item.query.get(item_id)
+        if item:
+            new_favorite = Favorite(
+                user_id=current_user.id,
+                product_id=item.id,
+                product_name=item.name,
+                product_description=item.description if item.description else 'No description available',
+                product_photo=item.image_filename if item.image_filename else 'default.jpg'
+            )
+            db.session.add(new_favorite)
+            db.session.commit()
+            flash('Item added to favorites!', 'success')
+        else:
+            flash('Item does not exist!', 'danger')
 
     return redirect(request.referrer or url_for('home_page'))
 
@@ -164,6 +172,7 @@ def favorite_page():
 def shopping_cart_page():
     cart_items = ShoppingCartItem.query.filter_by(user_id=current_user.id).all()
     return render_template('shopping_cart.html', cart_items=cart_items)
+
 
 @app.route('/add_to_cart', methods=['POST'])
 @login_required

@@ -66,14 +66,20 @@ class Item(db.Model):
         db.session.commit()
 
 
-
 class Favorite(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    product_id = db.Column(db.Integer, nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('item.id'), nullable=False)
     product_name = db.Column(db.String(100), nullable=False)
-    product_description = db.Column(db.String(500), nullable=False)
-    product_photo = db.Column(db.String(100), nullable=False)
+    product_description = db.Column(db.String(1000), nullable=True)
+    product_photo = db.Column(db.String(100), nullable=True)
+
+    def __init__(self, user_id, product_id, product_name, product_description, product_photo):
+        self.user_id = user_id
+        self.product_id = product_id
+        self.product_name = product_name
+        self.product_description = product_description
+        self.product_photo = product_photo
 
     def __repr__(self):
         return f"<Favorite {self.product_name}>"

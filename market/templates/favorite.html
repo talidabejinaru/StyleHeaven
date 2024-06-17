@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}
-Favorites
+Favorite Items
 {% endblock %}
 {% block content %}
 <style>
@@ -16,31 +16,75 @@ Favorites
 </style>
 
 <div class="container mt-4">
-    <h1>Favorite Items</h1>
-    {% if items %}
-        <div class="row">
-            {% for item in items %}
-            <div class="col-md-4">
-                <div class="card mb-4 shadow-sm">
+    <h2>Favorite Items</h2>
+    <div class="row">
+        {% for item in items %}
+        {% if item.name and item.price %}
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                {% if item.image_filename and item.image_filename != 'default.jpg' %}
                     <img src="{{ url_for('static', filename='img/' + item.image_filename) }}" class="card-img-top img-fluid product-img" alt="{{ item.name }}">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ item.name }}</h5>
-                        <p class="card-text">{{ item.description }}</p>
-                        <p class="card-text"><strong>{{ item.price }} Lei</strong></p>
-                        <form action="{{ url_for('toggle_favorite') }}" method="post">
-                            <input type="hidden" name="item_id" value="{{ item.id }}">
-                            <button type="submit" class="btn btn-sm btn-outline-danger">
-                                <img src="{{ url_for('static', filename='img/favorite.png') }}" alt="Favorite" style="width: 24px; height: 24px;">
-                            </button>
-                        </form>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.name }}</h5>
+                    <p class="card-text">{{ item.description }}</p>
+                    <p class="card-text"><strong>{{ item.price }} Lei</strong></p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <form action="{{ url_for('toggle_favorite') }}" method="post">
+                                <input type="hidden" name="item_id" value="{{ item.id }}">
+                                <button type="submit" class="btn btn-sm btn-outline-secondary">
+                                    {% if item.id in favorite_item_ids %}
+                                    <img src="{{ url_for('static', filename='img/favorite_filled.png') }}" alt="Favorite" style="width: 24px; height: 24px;">
+                                    {% else %}
+                                    <img src="{{ url_for('static', filename='img/favorite.png') }}" alt="Favorite" style="width: 24px; height: 24px;">
+                                    {% endif %}
+                                </button>
+                            </form>
+                            <button type="button" class="btn btn-sm btn-outline-primary" data-toggle="modal" data-target="#Modal-Cart-{{ item.id }}">Add to Cart</button>
+                        </div>
                     </div>
                 </div>
             </div>
-            {% endfor %}
         </div>
-    {% else %}
-        <p>You have no favorite items.</p>
-    {% endif %}
+
+        <!-- Modal -->
+        <div class="modal fade" id="Modal-Cart-{{ item.id }}" tabindex="-1" role="dialog" aria-labelledby="ModalLabel-{{ item.id }}" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="ModalLabel-{{ item.id }}">Select Size</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>Item:</strong> {{ item.name }}</p>
+                        <p><strong>Price:</strong> {{ item.price }} Lei</p>
+                        <p><strong>Transport:</strong> 0 RON</p>
+                        <hr>
+                        <p><strong>Total:</strong> {{ item.price }} Lei</p>
+                        <p><strong>Select Size:</strong></p>
+                        <div class="btn-group" role="group" aria-label="Size selection">
+                            <form action="{{ url_for('add_to_cart') }}" method="post">
+                                <input type="hidden" name="item_id" value="{{ item.id }}">
+                                <button type="submit" name="size" value="XS" class="btn btn-outline-primary">XS</button>
+                                <button type="submit" name="size" value="S" class="btn btn-outline-primary">S</button>
+                                <button type="submit" name="size" value="M" class="btn btn-outline-primary">M</button>
+                                <button type="submit" name="size" value="L" class="btn btn-outline-primary">L</button>
+                                <button type="submit" name="size" value="XL" class="btn btn-outline-primary">XL</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
 </div>
 
 <!-- jQuery and Bootstrap JS -->
