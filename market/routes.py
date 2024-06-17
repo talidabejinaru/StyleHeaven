@@ -197,6 +197,18 @@ def add_to_cart():
     flash('Failed to add item to cart.', 'danger')
     return redirect(request.referrer or url_for('kids_page'))
 
+@app.route('/remove_from_cart/<int:item_id>', methods=['POST'])
+@login_required
+def remove_from_cart(item_id):
+    cart_item = ShoppingCartItem.query.filter_by(user_id=current_user.id, item_id=item_id).first()
+    if cart_item:
+        db.session.delete(cart_item)
+        db.session.commit()
+        flash('Item removed from cart!', 'success')
+    else:
+        flash('Item not found in cart.', 'danger')
+    return redirect(url_for('shopping_cart_page'))
+
 @app.route('/order_details')
 @login_required
 def order_details():

@@ -4,32 +4,28 @@ Shopping Cart
 {% endblock %}
 {% block content %}
 <div class="container mt-4">
-    <h1>Shopping Cart</h1>
-    {% if cart_items %}
-        <div class="row">
-            {% for cart_item in cart_items %}
-            <div class="col-md-4">
-                <div class="card mb-4 shadow-sm">
-                    <img src="{{ url_for('static', filename='img/' + cart_item.item.image_filename) }}" class="card-img-top img-fluid product-img" alt="{{ cart_item.item.name }}">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ cart_item.item.name }}</h5>
-                        <p class="card-text">{{ cart_item.item.description }}</p>
-                        <p class="card-text"><strong>Size:</strong> {{ cart_item.size }}</p>
-                        <p class="card-text"><strong>{{ cart_item.item.price }} Lei</strong></p>
+    <h2>Shopping Cart</h2>
+    <div class="row">
+        {% for item in cart_items %}
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                <img src="{{ url_for('static', filename='img/' + item.item.image_filename) }}" class="card-img-top img-fluid product-img" alt="{{ item.item.name }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.item.name }}</h5>
+                    <p class="card-text">{{ item.item.description }}</p>
+                    <p class="card-text"><strong>{{ item.item.price }} Lei</strong></p>
+                    <p class="card-text"><strong>Size: {{ item.size }}</strong></p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <form action="{{ url_for('remove_from_cart', item_id=item.item.id) }}" method="post">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
-            {% endfor %}
         </div>
-        <div class="modal-footer">
-            <a href="{{ url_for('order_details') }}" class="btn btn-finalize">Finalize Order</a>
-        </div>
-    {% else %}
-        <p>This is your shopping cart. It's currently empty.</p>
-    {% endif %}
+        {% endfor %}
+    </div>
 </div>
-
-<!-- jQuery and Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha384-ZvpUoO/+P58yS7Y8F3wN+lV8o4YdT+gQ4gh4cftqPLV49+y6t/Ns3P0c6JsX6nrT" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
 {% endblock %}
