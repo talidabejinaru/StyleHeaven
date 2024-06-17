@@ -13,9 +13,11 @@ Favorite Items
         background-color: blue;
         color: white;
     }
-    .favorite-btn.favorited {
-        border: 2px solid red;
+    .favorite-btn.favorited .fa-heart {
         color: red;
+    }
+    .favorite-btn .fa-heart {
+        color: black;
     }
 </style>
 
@@ -37,7 +39,7 @@ Favorite Items
                         <div class="btn-group">
                             <form action="{{ url_for('toggle_favorite') }}" method="post">
                                 <input type="hidden" name="item_id" value="{{ item.id }}">
-                                <button type="submit" class="btn btn-sm favorite-btn {% if item.id in favorite_item_ids %}favorited{% endif %}">
+                                <button type="submit" class="btn btn-sm favorite-btn favorited">
                                     <i class="fa fa-heart"></i>
                                 </button>
                             </form>
