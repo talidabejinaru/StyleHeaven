@@ -1,8 +1,9 @@
-from market import app, db
 from flask import render_template, redirect, url_for, flash, request, jsonify
-from market.models import Item, User, Favorite, ShoppingCartItem
-from market.forms import RegisterForm, LoginForm, PurchaseItemForm, SellItemForm
 from flask_login import login_user, logout_user, login_required, current_user
+from collections import defaultdict
+from . import app, db
+from .models import Item, User, Favorite, ShoppingCartItem
+from .forms import RegisterForm, LoginForm, PurchaseItemForm, SellItemForm
 
 @app.route('/')
 @app.route('/home')
@@ -52,7 +53,7 @@ def register_page():
         db.session.commit()
         login_user(user_to_create)
         flash(f"Account created successfully! You are now logged in as {user_to_create.username}", category='success')
-        return redirect(url_for('market_page'))
+        return redirect(url_for('home_page'))
     if form.errors != {}:  # If there are errors from the validations
         for err_msg in form.errors.values():
             flash(f'There was an error with creating a user: {err_msg}', category='danger')
@@ -75,7 +76,6 @@ def login_page():
 
     return render_template('login.html', form=form)
 
-
 @app.route('/logout')
 def logout_page():
     logout_user()
@@ -86,19 +86,31 @@ def logout_page():
 @login_required
 def women_page():
     items = Item.query.filter_by(category='women').all()
-    return render_template('women.html', items=items)
+    items_by_subcategory = defaultdict(list)
+    for item in items:
+        items_by_subcategory[item.subcategory].append(item)
+    favorite_item_ids = [fav.product_id for fav in current_user.favorites]
+    return render_template('women.html', items_by_subcategory=items_by_subcategory, favorite_item_ids=favorite_item_ids)
 
 @app.route('/men')
 @login_required
 def men_page():
     items = Item.query.filter_by(category='men').all()
-    return render_template('men.html', items=items)
+    items_by_subcategory = defaultdict(list)
+    for item in items:
+        items_by_subcategory[item.subcategory].append(item)
+    favorite_item_ids = [fav.product_id for fav in current_user.favorites]
+    return render_template('men.html', items_by_subcategory=items_by_subcategory, favorite_item_ids=favorite_item_ids)
 
 @app.route('/kids')
 @login_required
 def kids_page():
     items = Item.query.filter_by(category='kids').all()
-    return render_template('kids.html', items=items)
+    items_by_subcategory = defaultdict(list)
+    for item in items:
+        items_by_subcategory[item.subcategory].append(item)
+    favorite_item_ids = [fav.product_id for fav in current_user.favorites]
+    return render_template('kids.html', items_by_subcategory=items_by_subcategory, favorite_item_ids=favorite_item_ids)
 
 @app.route('/subcategory/<category>/<subcategory>')
 @login_required
@@ -107,11 +119,10 @@ def subcategory_page(category, subcategory):
     favorite_item_ids = [fav.product_id for fav in current_user.favorites]
     return render_template('subcategory.html', items=items, category=category, subcategory=subcategory, favorite_item_ids=favorite_item_ids)
 
-
-
 @app.route('/add_to_favorites/<int:product_id>', methods=['POST'])
 @login_required
 def add_to_favorites(product_id):
+    # Verificăm dacă produsul este deja în favorite
     existing_favorite = Favorite.query.filter_by(user_id=current_user.id, product_id=product_id).first()
     if not existing_favorite:
         item = Item.query.get(product_id)
@@ -120,8 +131,8 @@ def add_to_favorites(product_id):
                 user_id=current_user.id,
                 product_id=item.id,
                 product_name=item.name,
-                product_description=item.description if item.description else 'No description available',
-                product_photo=item.image_filename if item.image_filename else 'default.jpg'
+                product_description=item.description,
+                product_photo=item.image_filename
             )
             db.session.add(favorite)
             db.session.commit()
@@ -130,12 +141,13 @@ def add_to_favorites(product_id):
             flash(f'Item does not exist!', category='danger')
     else:
         flash(f'Item is already in favorites!', category='info')
-    return redirect(url_for('kids_page'))
+    return redirect(url_for('kids_page'))  # Redirecționăm utilizatorul înapoi la pagina anterioară
 
 @app.route('/toggle_favorite', methods=['POST'])
 @login_required
 def toggle_favorite():
     item_id = request.form.get('item_id')
+    item = Item.query.get(item_id)
     favorite = Favorite.query.filter_by(user_id=current_user.id, product_id=item_id).first()
 
     if favorite:
@@ -143,20 +155,16 @@ def toggle_favorite():
         db.session.commit()
         flash('Item removed from favorites!', 'info')
     else:
-        item = Item.query.get(item_id)
-        if item:
-            new_favorite = Favorite(
-                user_id=current_user.id,
-                product_id=item.id,
-                product_name=item.name,
-                product_description=item.description if item.description else 'No description available',
-                product_photo=item.image_filename if item.image_filename else 'default.jpg'
-            )
-            db.session.add(new_favorite)
-            db.session.commit()
-            flash('Item added to favorites!', 'success')
-        else:
-            flash('Item does not exist!', 'danger')
+        new_favorite = Favorite(
+            user_id=current_user.id,
+            product_id=item_id,
+            product_name=item.name,
+            product_description=item.description,
+            product_photo=item.image_filename
+        )
+        db.session.add(new_favorite)
+        db.session.commit()
+        flash('Item added to favorites!', 'success')
 
     return redirect(request.referrer or url_for('home_page'))
 
@@ -173,7 +181,6 @@ def shopping_cart_page():
     cart_items = ShoppingCartItem.query.filter_by(user_id=current_user.id).all()
     return render_template('shopping_cart.html', cart_items=cart_items)
 
-
 @app.route('/add_to_cart', methods=['POST'])
 @login_required
 def add_to_cart():
@@ -186,9 +193,9 @@ def add_to_cart():
         db.session.add(cart_item)
         db.session.commit()
         flash('Product added to cart successfully!', 'success')
-        return redirect(url_for('kids_page'))
+        return redirect(request.referrer or url_for('kids_page'))
     flash('Failed to add item to cart.', 'danger')
-    return redirect(url_for('kids_page'))
+    return redirect(request.referrer or url_for('kids_page'))
 
 @app.route('/order_details')
 @login_required
