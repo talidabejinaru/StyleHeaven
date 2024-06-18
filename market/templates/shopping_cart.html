@@ -1,31 +1,29 @@
 {% extends 'base.html' %}
 {% block title %}
-Shopping Cart
+    Shopping Cart
 {% endblock %}
 {% block content %}
-<div class="container mt-4">
-    <h2>Shopping Cart</h2>
-    <div class="row">
-        {% for item in cart_items %}
-        <div class="col-md-4">
-            <div class="card mb-4 shadow-sm">
-                <img src="{{ url_for('static', filename='img/' + item.item.image_filename) }}" class="card-img-top img-fluid product-img" alt="{{ item.item.name }}">
-                <div class="card-body">
-                    <h5 class="card-title">{{ item.item.name }}</h5>
-                    <p class="card-text">{{ item.item.description }}</p>
-                    <p class="card-text"><strong>{{ item.item.price }} Lei</strong></p>
-                    <p class="card-text"><strong>Size: {{ item.size }}</strong></p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <form action="{{ url_for('remove_from_cart', item_id=item.item.id) }}" method="post">
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
-                            </form>
+    <div class="container mt-4">
+        <h2>Shopping Cart</h2>
+        <ul class="list-group">
+            {% for cart_item in cart_items %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div class="media">
+                        <img src="{{ url_for('static', filename='img/' ~ cart_item.item.image_filename) }}" class="mr-3" alt="{{ cart_item.item.name }}" style="width: 100px;">
+                        <div class="media-body">
+                            <h5 class="mt-0">{{ cart_item.item.name }}</h5>
+                            <p>{{ cart_item.item.description }}</p>
+                            <p><strong>Size:</strong> {{ cart_item.size }}</p>
+                            <p><strong>Price:</strong> {{ cart_item.item.price }} Lei</p>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
+                    <form action="{{ url_for('remove_from_cart') }}" method="POST">
+                        <input type="hidden" name="item_id" value="{{ cart_item.id }}">
+                        <button type="submit" class="btn btn-danger">Remove</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+        <a href="{{ url_for('order_details') }}" class="btn btn-primary mt-4">Order Now</a>
     </div>
-</div>
 {% endblock %}

@@ -85,8 +85,6 @@ class Favorite(db.Model):
         return f"<Favorite {self.product_name}>"
 
 
-
-
 class ShoppingCartItem(db.Model):
     __tablename__ = 'shopping_cart_item'
     id = db.Column(db.Integer, primary_key=True)
@@ -99,3 +97,13 @@ class ShoppingCartItem(db.Model):
 
     def __repr__(self):
         return f'<ShoppingCartItem {self.item.name} - {self.size}>'
+
+
+class NewsletterSubscriber(db.Model):
+    __tablename__ = 'newsletter_subscribers'
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+
+    def __repr__(self):
+        return f'<NewsletterSubscriber {self.email}>'
+

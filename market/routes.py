@@ -42,6 +42,19 @@ def market_page():
         owned_items = Item.query.filter_by(owner=current_user.id)
         return render_template('market.html', items=items, purchase_form=purchase_form, owned_items=owned_items, selling_form=selling_form)
 
+# Add this new route for newsletter subscription
+@app.route('/subscribe_newsletter', methods=['POST'])
+def subscribe_newsletter():
+    email = request.form.get('email')
+    if email:
+        new_subscriber = NewsletterSubscriber(email=email)
+        db.session.add(new_subscriber)
+        db.session.commit()
+        flash('You have successfully subscribed to the newsletter!', 'success')
+    else:
+        flash('Please enter a valid email address.', 'danger')
+    return redirect(url_for('home_page'))
+
 @app.route('/register', methods=['GET', 'POST'])
 def register_page():
     form = RegisterForm()
@@ -181,6 +194,7 @@ def shopping_cart_page():
     cart_items = ShoppingCartItem.query.filter_by(user_id=current_user.id).all()
     return render_template('shopping_cart.html', cart_items=cart_items)
 
+
 @app.route('/add_to_cart', methods=['POST'])
 @login_required
 def add_to_cart():
@@ -197,16 +211,17 @@ def add_to_cart():
     flash('Failed to add item to cart.', 'danger')
     return redirect(request.referrer or url_for('kids_page'))
 
-@app.route('/remove_from_cart/<int:item_id>', methods=['POST'])
+@app.route('/remove_from_cart', methods=['POST'])
 @login_required
-def remove_from_cart(item_id):
-    cart_item = ShoppingCartItem.query.filter_by(user_id=current_user.id, item_id=item_id).first()
-    if cart_item:
+def remove_from_cart():
+    item_id = request.form.get('item_id')
+    cart_item = ShoppingCartItem.query.get(item_id)
+    if cart_item and cart_item.user_id == current_user.id:
         db.session.delete(cart_item)
         db.session.commit()
-        flash('Item removed from cart!', 'success')
+        flash('Item removed from cart', 'success')
     else:
-        flash('Item not found in cart.', 'danger')
+        flash('Failed to remove item from cart', 'danger')
     return redirect(url_for('shopping_cart_page'))
 
 @app.route('/order_details')
