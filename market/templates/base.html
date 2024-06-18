@@ -38,10 +38,34 @@
             color: #333;
         }
         .content-wrapper {
-            min-height: calc(100vh - 60px - 100px); /* Adjust based on navbar and footer height */
+            flex: 1 0 auto;
+            margin-bottom: 20px; /* Add margin to create space above the footer */
         }
         footer {
+            flex-shrink: 0;
             height: 100px; /* Adjust based on footer height */
+        }
+        .navbar-nav-center {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .alert {
+            position: fixed;
+            top: 80px; /* Adjust this value based on the height of your navbar */
+            right: 20px;
+            z-index: 1050;
+            min-width: 300px;
+            opacity: 1;
+            transition: opacity 0.5s ease-out; /* Add transition for fade-out effect */
+        }
+        .alert.fade-out {
+            opacity: 0;
         }
     </style>
     {% block head %}
@@ -91,10 +115,10 @@
                     </div>
                 </li>
             </ul>
-             <div class="navbar-center">
+             <div class="navbar-nav navbar-nav-center">
                 <h1 class="navbar-brand">STYLEHEAVEN</h1>
             </div>
-            <ul class="navbar-nav">
+            <ul class="navbar-nav ml-auto">
                 {% if current_user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('favorite_page') }}"><i class="fas fa-heart"></i></a>
@@ -116,23 +140,21 @@
             </ul>
         </div>
     </nav>
-    <div class="content-wrapper">
-        <div class="container mt-5 pt-5">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    <div class="alert alert-dismissible fade show mt-4">
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ category }}">{{ message }}</div>
-                        {% endfor %}
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                {% endif %}
-            {% endwith %}
-            {% block content %}
-            {% endblock %}
-        </div>
+    <div class="content-wrapper container mt-5 pt-5">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="alert alert-dismissible fade show mt-4">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endif %}
+        {% endwith %}
+        {% block content %}
+        {% endblock %}
     </div>
     <footer class="bg-peach text-black py-3">
         <div class="container">
@@ -169,6 +191,14 @@
             }, function() {
                 $(this).find('.dropdown-menu').first().stop(true, true).delay(100).slideUp();
             });
+
+            // Auto-hide alerts after 3 seconds with fade-out effect
+            setTimeout(function() {
+                $(".alert").addClass("fade-out");
+                setTimeout(function() {
+                    $(".alert").alert('close');
+                }, 500); // Delay to allow fade-out effect to complete
+            }, 3000);
         });
     </script>
 </body>

@@ -4,36 +4,76 @@ Register Page
 {% endblock %}
 
 {% block content %}
-<body class="text-center">
-    <div class="container">
-        <form method="POST" class="form-register">
-            {{ form.hidden_tag() }}
-            <img class="mb-4" src="{{ url_for('static', filename='images/rochie.jpg') }}" alt="Rochie">
-            <h1 class="h3 mb-3 font-weight-normal text-black">
-                Please Create your Account
-            </h1>
-            <br>
-            {{ form.username.label(class="text-black") }}
-            {{ form.username(class="form-control", placeholder="User Name") }}
-
-            {{ form.email_address.label(class="text-black") }}
-            {{ form.email_address(class="form-control", placeholder="Email Address") }}
-
-            {{ form.password1.label(class="text-black") }}
-            {{ form.password1(class="form-control", placeholder="Password") }}
-
-            {{ form.password2.label(class="text-black") }}
-            {{ form.password2(class="form-control", placeholder="Confirm Password") }}
-
-            <br>
-
-            <div class="checkbox mb-3">
-                <h6 class="text-black">Already have an account?</h6>
-                <a class="btn btn-sm btn-secondary btn-creme" href="{{ url_for('login_page') }}">Login</a>
+<div class="container d-flex align-items-center justify-content-center min-vh-100">
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="register-card card shadow-sm p-5">
+                <div class="card-body">
+                    <h3 class="card-title text-center mb-4">Please Create your Account</h3>
+                    <form method="POST" class="form-register">
+                        {{ form.hidden_tag() }}
+                        <div class="form-group">
+                            {{ form.username.label(class="text-black sr-only") }}
+                            {{ form.username(class="form-control", placeholder="User Name") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.email_address.label(class="text-black sr-only") }}
+                            {{ form.email_address(class="form-control", placeholder="Email Address") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.password1.label(class="text-black sr-only") }}
+                            {{ form.password1(class="form-control", placeholder="Password") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.password2.label(class="text-black sr-only") }}
+                            {{ form.password2(class="form-control", placeholder="Confirm Password") }}
+                        </div>
+                        {{ form.submit(class="btn btn-primary btn-block") }}
+                        <div class="form-text text-center mt-3">
+                            <h6 class="text-black">Already have an account?</h6>
+                            <a class="btn btn-sm btn-secondary" href="{{ url_for('login_page') }}">Login</a>
+                        </div>
+                    </form>
+                </div>
             </div>
-
-            {{ form.submit(class="btn btn-lg btn-primary btn-creme btn-block") }}
-        </form>
+        </div>
+        <div class="col-lg-6 d-flex align-items-center justify-content-center">
+            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="img-fluid" style="max-width: 80%; height: auto;">
+        </div>
     </div>
-</body>
+</div>
 {% endblock %}
+
+<style>
+    body {
+        background-color: #FAF0E6;
+    }
+    .register-card {
+        width: 100%;
+        max-width: 600px; /* Increase the maximum width */
+        padding: 3rem; /* Increase the padding */
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .form-control {
+        border-radius: 30px;
+        margin-bottom: 1.5rem; /* Increase the spacing between form controls */
+    }
+    .btn-primary {
+        border-radius: 30px;
+        background-color: #333;
+        border: none;
+    }
+    .btn-primary:hover {
+        background-color: #555;
+    }
+    .btn-secondary {
+        border-radius: 30px;
+        background-color: #6c757d;
+        border: none;
+    }
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+</style>
