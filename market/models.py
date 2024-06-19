@@ -91,6 +91,7 @@ class ShoppingCartItem(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     item_id = db.Column(db.Integer, db.ForeignKey('item.id'), nullable=False)
     size = db.Column(db.String(10), nullable=False)
+    price = db.Column(db.Float, nullable=False, default=0.0)  # Set default value
 
     user = db.relationship('User', backref='shopping_cart_items')
     item = db.relationship('Item', backref='shopping_cart_items')

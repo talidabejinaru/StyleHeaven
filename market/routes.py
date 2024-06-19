@@ -203,7 +203,12 @@ def add_to_cart():
 
     item = Item.query.get(item_id)
     if item:
-        cart_item = ShoppingCartItem(user_id=current_user.id, item_id=item.id, size=size)
+        cart_item = ShoppingCartItem(
+            user_id=current_user.id,
+            item_id=item.id,
+            size=size,
+            price=item.price if item.price is not None else 0.0  # Ensure price is set here
+        )
         db.session.add(cart_item)
         db.session.commit()
         flash('Product added to cart successfully!', 'success')

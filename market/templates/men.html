@@ -6,8 +6,22 @@ Men Page
 <style>
     .product-img {
         width: 100%;
-        height: 500px; /* Adjust height as needed */
-        object-fit: cover;
+        max-height: 300px; /* Adjust height as needed */
+        object-fit: contain; /* Ensure the entire image is displayed without cropping */
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+    .card-body {
+        padding: 15px;
+    }
+    .card {
+        border: none;
+        border-radius: 10px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     }
     .btn-finalize {
         background-color: blue;
@@ -24,12 +38,36 @@ Men Page
         display: none;
         z-index: 1000; /* Ensure the notification is on top of other elements */
     }
+    .favorite-btn.favorited .fa-heart {
+        color: red;
+    }
+    .favorite-btn .fa-heart {
+        color: black;
+    }
+    .subcategory-title {
+        margin-top: 40px;
+        margin-bottom: 20px;
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #333;
+        position: relative;
+    }
+    .subcategory-title::after {
+        content: '';
+        width: 100px;
+        height: 4px;
+        background-color: #FFEFD5; /* Use the color of the menu */
+        display: block;
+        margin: 10px auto 0;
+        border-radius: 2px;
+    }
 </style>
 
 <div class="container mt-4">
     <div id="notification" class="notification">Product added successfully!</div>
     {% for subcategory, items in items_by_subcategory.items() %}
-        <h2>{{ subcategory }}</h2>
+        <h2 class="subcategory-title">{{ subcategory }}</h2>
         <div class="row">
             {% for item in items %}
             <div class="col-md-4">
@@ -45,12 +83,8 @@ Men Page
                             <div class="btn-group">
                                 <form action="{{ url_for('toggle_favorite') }}" method="post">
                                     <input type="hidden" name="item_id" value="{{ item.id }}">
-                                    <button type="submit" class="btn btn-sm btn-outline-secondary">
-                                        {% if item.id in favorite_item_ids %}
-                                        <img src="{{ url_for('static', filename='img/favorite_filled.png') }}" alt="Favorite" style="width: 24px; height: 24px;">
-                                        {% else %}
-                                        <img src="{{ url_for('static', filename='img/favorite.png') }}" alt="Favorite" style="width: 24px; height: 24px;">
-                                        {% endif %}
+                                    <button type="submit" class="btn btn-sm favorite-btn {% if item.id in favorite_item_ids %}favorited{% endif %}">
+                                        <i class="fa fa-heart"></i>
                                     </button>
                                 </form>
                                 <button type="button" class="btn btn-sm btn-outline-primary" data-toggle="modal" data-target="#Modal-Cart-{{ item.id }}">Add to Cart</button>

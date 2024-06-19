@@ -3,27 +3,103 @@
     Shopping Cart
 {% endblock %}
 {% block content %}
-    <div class="container mt-4">
-        <h2>Shopping Cart</h2>
-        <ul class="list-group">
-            {% for cart_item in cart_items %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="media">
-                        <img src="{{ url_for('static', filename='img/' ~ cart_item.item.image_filename) }}" class="mr-3" alt="{{ cart_item.item.name }}" style="width: 100px;">
-                        <div class="media-body">
-                            <h5 class="mt-0">{{ cart_item.item.name }}</h5>
-                            <p>{{ cart_item.item.description }}</p>
-                            <p><strong>Size:</strong> {{ cart_item.size }}</p>
-                            <p><strong>Price:</strong> {{ cart_item.item.price }} Lei</p>
-                        </div>
+<style>
+    .cart-container {
+        margin-top: 40px;
+    }
+    .cart-title {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #333;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    .cart-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        border-bottom: 1px solid #ddd;
+    }
+    .cart-item:last-child {
+        border-bottom: none;
+    }
+    .cart-item img {
+        width: 100px;  /* Fixed width */
+        height: 100px; /* Fixed height */
+        object-fit: cover; /* Maintain aspect ratio */
+        margin-right: 20px;
+    }
+    .cart-item-details {
+        flex-grow: 1;
+    }
+    .cart-item-title {
+        font-size: 1.25rem;
+        font-weight: bold;
+        margin: 0;
+    }
+    .cart-item-description {
+        margin: 0;
+    }
+    .cart-item-size, .cart-item-price {
+        margin-top: 10px;
+        font-size: 1rem;
+    }
+    .order-now-btn {
+        display: block;
+        width: 200px;
+        margin: 30px auto;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 15px;
+        border-radius: 5px;
+        font-size: 1.25rem;
+        text-align: center;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .order-now-btn:hover {
+        background-color: #0056b3;
+    }
+    .remove-btn {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 12px 18px; /* Increased size */
+        border-radius: 5px;
+        font-size: 1rem;
+    }
+    .remove-btn:hover {
+        background-color: #c82333;
+    }
+</style>
+
+<div class="container cart-container">
+    <h1 class="cart-title">Shopping Cart</h1>
+    <ul class="list-group">
+        {% for cart_item in cart_items %}
+            <li class="list-group-item d-flex justify-content-between align-items-center cart-item">
+                <div class="media">
+                    <img src="{{ url_for('static', filename='img/' ~ cart_item.item.image_filename) }}" class="mr-3" alt="{{ cart_item.item.name }}">
+                    <div class="media-body">
+                        <h5 class="mt-0 cart-item-title">{{ cart_item.item.name }}</h5>
+                        <p class="cart-item-description">{{ cart_item.item.description }}</p>
+                        <p class="cart-item-size"><strong>Size:</strong> {{ cart_item.size }}</p>
+                        <p class="cart-item-price"><strong>Price:</strong> {{ cart_item.price | default(0.0, true) }} Lei</p>
                     </div>
-                    <form action="{{ url_for('remove_from_cart') }}" method="POST">
-                        <input type="hidden" name="item_id" value="{{ cart_item.id }}">
-                        <button type="submit" class="btn btn-danger">Remove</button>
-                    </form>
-                </li>
-            {% endfor %}
-        </ul>
-        <a href="{{ url_for('order_details') }}" class="btn btn-primary mt-4">Order Now</a>
-    </div>
+                </div>
+                <form action="{{ url_for('remove_from_cart') }}" method="POST">
+                    <input type="hidden" name="item_id" value="{{ cart_item.id }}">
+                    <button type="submit" class="remove-btn">Remove</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('order_details') }}" class="order-now-btn">Order Now</a>
+</div>
+
+<!-- jQuery and Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha384-ZvpUoO/+P58yS7Y8F3wN+lV8o4YdT+gQ4gh4cftqPLV49+y6t/Ns3P0c6JsX6nrT" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
 {% endblock %}
